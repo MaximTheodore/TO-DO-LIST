@@ -23,14 +23,15 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   TimeOfDay? _reminderTime;
-  List<String> _selectedCategories = [];
+  Set<String> _selectedCategories = {};
   List<String> _subtasks = [];
   String? _titleError;
   String? _dateError;
-    @override
+
+  @override
   void initState() {
     super.initState();
-    _requestExactAlarmPermission(); 
+    _requestExactAlarmPermission();
   }
 
   int _generateNotificationId() {
@@ -38,7 +39,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     return (now % 2147483647).toInt();
   }
 
-    Future<void> _requestExactAlarmPermission() async {
+  Future<void> _requestExactAlarmPermission() async {
     try {
       print("Checking SCHEDULE_EXACT_ALARM permission status...");
       final status = await Permission.scheduleExactAlarm.status;
@@ -81,7 +82,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +176,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               builder: (context) => CategorySelectionScreen(
-                selectedCategories: _selectedCategories,
+                selectedCategories: _selectedCategories.toList(),
                 onCategoriesSelected: (categories) {
                   setState(() {
-                    _selectedCategories = categories;
+                    _selectedCategories = categories.toSet();
                   });
                 },
               ),
@@ -196,7 +196,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 final category = context.read<CategoryTaskCubit>().state is CategoryTaskLoaded
                     ? (context.read<CategoryTaskCubit>().state as CategoryTaskLoaded)
                         .categories
-                        .firstWhere((c) => c.id == catId || c.title == catId, orElse: () => CategoryTask(title: catId, color: Colors.grey.value, imageUrl: ''))
+                        .firstWhere((c) => c.id == catId, orElse: () => CategoryTask(title: catId, color: Colors.grey.value, imageUrl: ''))
                     : CategoryTask(title: catId, color: Colors.grey.value, imageUrl: '');
                 return Chip(
                   label: Text(category.title),
@@ -219,7 +219,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           Expanded(
             child: TextField(
               controller: _subtaskController,
-              decoration: const InputDecoration(labelText: 'Добавить под задачу'),
+              decoration: const InputDecoration(labelText: 'Добавить подзадачу'),
             ),
           ),
           IconButton(
@@ -259,22 +259,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           ],
         ),
       )).toList(),
-    );
-  }
-
-  Widget _buildDateTimeSelector(
-    BuildContext context,
-    String label,
-    IconData icon,
-    DateTime? value,
-    VoidCallback onPressed,
-  ) {
-    String displayText = value != null ? DateFormat('dd.MM.yyyy').format(value) : 'Не выбрано';
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(label),
-      trailing: Text(displayText, style: const TextStyle(color: Colors.grey)),
-      onTap: onPressed,
     );
   }
 
@@ -346,7 +330,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       taskDay: taskDate,
       taskTime: taskTime,
       taskReminderTime: reminderTime,
-      taskCategories: _selectedCategories,
+      taskCategories: _selectedCategories.toList(),
       isCompleted: false,
       completedDay: DateTime.now(),
       subtasks: _subtasks,
@@ -355,7 +339,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
     final firebaseApi = FirebaseApi();
     context.read<TaskCubit>().addTask(newTask).then((_) {
-      if (reminderTime.isAfter(DateTime.now()) && reminderTime.hour != null && reminderTime.minute !=null) {
+      if (reminderTime.isAfter(DateTime.now()) && reminderTime.hour != null && reminderTime.minute != null) {
         print('сообщение скоро отправится');
         final taskId = _generateNotificationId();
         firebaseApi.scheduleNotification(

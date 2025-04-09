@@ -188,6 +188,17 @@ class _EditTaskBottomSheetState extends State<EditTaskBottomSheet> {
   }
 
   Widget _buildCategorySelector(BuildContext context) {
+    final state = context.read<CategoryTaskCubit>().state;
+    List<CategoryTask> categories = [];
+    if (state is CategoryTaskLoaded) {
+      categories = state.categories;
+    }
+
+    final existingCategoryIds = categories.map((c) => c.id).toSet();
+    final filteredSelectedCategories = _selectedCategories
+        .where((catId) => existingCategoryIds.contains(catId))
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,22 +223,19 @@ class _EditTaskBottomSheetState extends State<EditTaskBottomSheet> {
             );
           },
         ),
-        if (_selectedCategories.isNotEmpty)
+        if (filteredSelectedCategories.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
             child: Wrap(
               spacing: 8,
               runSpacing: 4,
-              children: _selectedCategories.map((catId) {
-                final category = context.read<CategoryTaskCubit>().state is CategoryTaskLoaded
-                    ? (context.read<CategoryTaskCubit>().state as CategoryTaskLoaded)
-                        .categories
-                        .firstWhere((c) => c.id == catId || c.title == catId, orElse: () => CategoryTask(title: catId, color: Colors.grey.value, imageUrl: ''))
-                    : CategoryTask(title: catId, color: Colors.grey.value, imageUrl: '');
+              children: filteredSelectedCategories.map((catId) {
+                final category = categories.firstWhere((c) => c.id == catId);
                 return Chip(
                   label: Text(category.title),
                   avatar: category.imageUrl.isNotEmpty
-                      ? Image.asset(category.imageUrl, width: 32, height: 32, color: Color(category.color))
+                      ? Image.asset(category.imageUrl,
+                          width: 32, height: 32, color: Color(category.color))
                       : null,
                 );
               }).toList(),

@@ -227,102 +227,104 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Добавить категорию',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: IconButton(
-                    icon: const Icon(Icons.check, color: Colors.white),
-                    onPressed: _saveCategory,
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Добавить категорию',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text('Название категории', style: TextStyle(fontWeight: FontWeight.bold)),
-            TextField(
-              controller: _categoryNameController,
-              decoration: const InputDecoration(hintText: 'Введите название'),
-            ),
-            const SizedBox(height: 20),
-            const Text('Цвет', style: TextStyle(fontWeight: FontWeight.bold)),
-            Wrap(
-              spacing: 8,
-              children: _colors.map((color) => GestureDetector(
-                onTap: () => setState(() => _selectedColor = color),
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  margin: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _selectedColor == color ? Colors.black : Colors.transparent,
-                      width: 2,
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: IconButton(
+                      icon: const Icon(Icons.check, color: Colors.white),
+                      onPressed: _saveCategory,
                     ),
                   ),
-                ),
-              )).toList(),
-            ),
-            const SizedBox(height: 20),
-            const Text('Иконка', style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(
-              height: 100,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: getIcons(_iconType).map((iconPath) => GestureDetector(
-                  onTap: () => setState(() => _selectedIcon = iconPath),
+                ],
+              ),
+              const SizedBox(height: 20),
+              const Text('Название категории', style: TextStyle(fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _categoryNameController,
+                decoration: const InputDecoration(hintText: 'Введите название'),
+              ),
+              const SizedBox(height: 20),
+              const Text('Цвет', style: TextStyle(fontWeight: FontWeight.bold)),
+              Wrap(
+                spacing: 8,
+                children: _colors.map((color) => GestureDetector(
+                  onTap: () => setState(() => _selectedColor = color),
                   child: Container(
-                    width: 50,
-                    height: 50,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    padding: const EdgeInsets.all(8),
+                    width: 30,
+                    height: 30,
+                    margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      border: _selectedIcon == iconPath
-                          ? Border.all(color: Colors.blue, width: 2)
-                          : null,
-                      borderRadius: BorderRadius.circular(8),
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _selectedColor == color ? Colors.black : Colors.transparent,
+                        width: 2,
+                      ),
                     ),
-                    child: Image.asset(iconPath),
                   ),
                 )).toList(),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                  onPressed: () => setState(() => _iconType = 'finance'),
-                  child: const Text('Финансы'),
+              const SizedBox(height: 20),
+              const Text('Иконка', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: getIcons(_iconType).map((iconPath) => GestureDetector(
+                    onTap: () => setState(() => _selectedIcon = iconPath),
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        border: _selectedIcon == iconPath
+                            ? Border.all(color: Colors.blue, width: 2)
+                            : null,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(iconPath),
+                    ),
+                  )).toList(),
                 ),
-                TextButton(
-                  onPressed: () => setState(() => _iconType = 'food'),
-                  child: const Text('Еда и напитки'),
-                ),
-                TextButton(
-                  onPressed: () => setState(() => _iconType = 'payment'),
-                  child: const Text('Покупки'),
-                ),
-              ],
-            ),
-          ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () => setState(() => _iconType = 'finance'),
+                    child: const Text('Финансы'),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(() => _iconType = 'food'),
+                    child: const Text('Еда и напитки'),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(() => _iconType = 'payment'),
+                    child: const Text('Покупки'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
